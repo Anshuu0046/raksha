@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   allowedDevOrigins: ["127.0.0.1"],
-  serverExternalPackages: ["web-push", "postgres"],
+  serverExternalPackages: ["web-push", "postgres", "nodemailer"],
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

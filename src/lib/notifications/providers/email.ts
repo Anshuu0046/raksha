@@ -1,3 +1,4 @@
+import nodemailer, { type Transporter } from "nodemailer";
 import { isDemoMode, serverEnv } from "@/lib/env";
 import { fetchWithTimeout } from "@/lib/maps/cache";
 import type { DeliveryResult, EmailMessage, EmailProvider } from "../types";
@@ -14,6 +15,39 @@ class UnconfiguredEmailProvider implements EmailProvider {
   readonly name = "none";
   async send(): Promise<DeliveryResult> {
     return { status: "skipped", provider: this.name, error: "Email provider not configured", permanent: true };
+  }
+}
+
+/** Gmail / SMTP Provider (no domain required). */
+export class SmtpEmailProvider implements EmailProvider {
+  readonly name = "smtp";
+  private transporter: Transporter;
+
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: serverEnv.smtpUser(),
+        pass: serverEnv.smtpPass(),
+      },
+    });
+  }
+
+  async send(message: EmailMessage): Promise<DeliveryResult> {
+    try {
+      const from = `Raksha Alerts <${serverEnv.smtpUser()}>`;
+      const info = await this.transporter.sendMail({
+        from,
+        to: message.to,
+        subject: message.subject,
+        html: message.html,
+        text: message.text,
+      });
+      return { status: "sent", provider: this.name, messageId: info.messageId };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { status: "failed", provider: this.name, error: `SMTP error: ${msg}` };
+    }
   }
 }
 
@@ -51,6 +85,7 @@ export class ResendEmailProvider implements EmailProvider {
 
 export function getEmailProvider(): EmailProvider {
   if (isDemoMode()) return new SimulatedEmailProvider();
+  if (serverEnv.smtpUser() && serverEnv.smtpPass()) return new SmtpEmailProvider();
   if (serverEnv.resendApiKey()) return new ResendEmailProvider();
   return new UnconfiguredEmailProvider();
 }

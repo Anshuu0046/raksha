@@ -50,6 +50,8 @@ export const serverEnv = {
   msg91GenericTemplateId: () => process.env.MSG91_GENERIC_TEMPLATE_ID || "",
   // Email
   resendApiKey: () => process.env.RESEND_API_KEY || "",
+  smtpUser: () => process.env.SMTP_USER || process.env.GMAIL_USER || "",
+  smtpPass: () => (process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || "").replace(/\s+/g, ""),
   emailFrom: () => process.env.EMAIL_FROM || "Raksha Alerts <alerts@example.com>",
   // Web push
   vapidPublicKey: () => process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "",
