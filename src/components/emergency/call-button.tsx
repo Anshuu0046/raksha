@@ -4,6 +4,7 @@ import { Phone } from "lucide-react";
 import { toast } from "sonner";
 import { buttonVariants } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/client";
+import { tryDirectCall } from "@/lib/native/direct-call";
 import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 
@@ -41,6 +42,8 @@ export function CallButton({
         if (intercept) {
           e.preventDefault();
           toast.info(t("demo.callIntercepted", { number }));
+        } else if (tryDirectCall(number)) {
+          e.preventDefault();
         }
       }}
       className={cn(buttonVariants({ variant, size, block }), sublabel ? "h-auto min-h-16 flex-col gap-0.5 py-2.5" : "", className)}
