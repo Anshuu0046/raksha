@@ -34,12 +34,13 @@ export class ResendEmailProvider implements EmailProvider {
           headers: { "X-Entity-Ref-ID": crypto.randomUUID() },
         }),
       });
-      const body = (await res.json().catch(() => ({}))) as { id?: string; name?: string };
+      const body = (await res.json().catch(() => ({}))) as { id?: string; name?: string; message?: string };
       if (res.ok) return { status: "sent", provider: this.name, messageId: body.id };
+      const detail = body.message ?? body.name ?? res.status;
       return {
         status: "failed",
         provider: this.name,
-        error: `Email rejected (${body.name ?? res.status})`,
+        error: `Email rejected (${detail})`,
         permanent: res.status === 422 || res.status === 403,
       };
     } catch {

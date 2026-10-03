@@ -22,16 +22,21 @@ class UnconfiguredSmsProvider implements SmsProvider {
 export class TwilioSmsProvider implements SmsProvider {
   readonly name = "twilio";
   async send(message: SmsMessage): Promise<DeliveryResult> {
-    const sid = serverEnv.twilioSid();
+    const accountSid = serverEnv.twilioSid();
+    const apiKeySid = serverEnv.twilioApiKeySid();
+    const apiKeySecret = serverEnv.twilioApiKeySecret();
+    const authUser = apiKeySid || accountSid;
+    const authPass = apiKeySecret || serverEnv.twilioToken();
+
     const form = new URLSearchParams({ To: message.to, Body: message.body });
     const service = serverEnv.twilioMessagingServiceSid();
     if (service) form.set("MessagingServiceSid", service);
     else form.set("From", serverEnv.twilioFrom());
     try {
-      const res = await fetchWithTimeout(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
+      const res = await fetchWithTimeout(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
         method: "POST",
         headers: {
-          Authorization: `Basic ${Buffer.from(`${sid}:${serverEnv.twilioToken()}`).toString("base64")}`,
+          Authorization: `Basic ${Buffer.from(`${authUser}:${authPass}`).toString("base64")}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: form,
@@ -39,10 +44,11 @@ export class TwilioSmsProvider implements SmsProvider {
       const body = (await res.json().catch(() => ({}))) as { sid?: string; code?: number; message?: string };
       if (res.ok) return { status: "sent", provider: this.name, messageId: body.sid };
       // 4xx (e.g. 21211 invalid number, 21610 unsubscribed) will not succeed on retry.
+      const errorDetail = body.message ? `${body.code ? `${body.code}: ` : ""}${body.message}` : `${body.code ?? res.status}`;
       return {
         status: "failed",
         provider: this.name,
-        error: `Twilio error ${body.code ?? res.status}`,
+        error: `Twilio error (${errorDetail})`,
         permanent: res.status >= 400 && res.status < 500 && res.status !== 429,
       };
     } catch {
