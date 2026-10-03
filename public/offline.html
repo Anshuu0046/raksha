@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d1b2a" />
+    <title>Offline · Raksha</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif; background: #0d1b2a; color: #fff; }
+      main { max-width: 520px; margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) 18px 32px; }
+      h1 { font-size: 30px; line-height: 1.08; letter-spacing: -0.02em; margin: 18px 0 8px; font-weight: 800; }
+      p { color: #cdd8e5; font-size: 16px; line-height: 1.5; margin: 0 0 12px; }
+      a.btn { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 14px 18px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 17px; margin-top: 10px; }
+      .sos { background: #d91f2c; color: #fff; }
+      .light { background: #fff; color: #0d1b2a; }
+      .ghost { background: rgba(255,255,255,.1); color: #fff; }
+      .num { font-variant-numeric: tabular-nums; }
+      h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: #a7b8cc; margin: 28px 0 4px; }
+      small { display: block; color: #a7b8cc; font-weight: 500; font-size: 13px; }
+      .mark { width: 36px; height: 36px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12.5" fill="none" stroke="#fff" stroke-width="3.2"/><circle cx="16" cy="16" r="5.5" fill="#fff"/></svg>
+      <h1>Internet connection unavailable</h1>
+      <p>Call emergency services directly. Phone calls and SMS work without internet.</p>
+      <p lang="hi">इंटरनेट उपलब्ध नहीं है। सीधे आपातकालीन सेवाओं को कॉल करें।</p>
+
+      <a class="btn sos" href="tel:112"><span>Call 112 · Emergency</span><span class="num">112</span></a>
+      <div id="helplines"></div>
+
+      <h2>Your trusted contacts</h2>
+      <div id="contacts"><p>Open Raksha once while online to keep your contacts available offline.</p></div>
+
+      <h2>Retry</h2>
+      <a class="btn ghost" href="/app"><span>Try opening Raksha again</span></a>
+    </main>
+    <script>
+      (function () {
+        function read(key) { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; } }
+        function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+        var fix = read("raksha.lastFix.v1");
+        var mapUrl = fix ? "https://www.google.com/maps/search/?api=1&query=" + fix.lat.toFixed(6) + "," + fix.lng.toFixed(6) : null;
+        var helplines = read("raksha.helplines.v1") || [];
+        var hl = document.getElementById("helplines");
+        helplines.filter(function (h) { return h.number !== "112"; }).slice(0, 4).forEach(function (h) {
+          var a = el("a", "btn ghost"); a.href = "tel:" + h.number;
+          a.appendChild(el("span", "", h.name)); a.appendChild(el("span", "num", h.number)); hl.appendChild(a);
+        });
+        var contacts = (read("raksha.contacts.v1") || []).filter(function (c) { return c.phone; });
+        if (contacts.length) {
+          var box = document.getElementById("contacts"); box.innerHTML = "";
+          contacts.forEach(function (c) {
+            var call = el("a", "btn light"); call.href = "tel:" + c.phone;
+            call.appendChild(el("span", "", "Call " + c.name)); call.appendChild(el("span", "num", c.phone)); box.appendChild(call);
+            var body = "EMERGENCY: I need help." + (mapUrl ? " My last known location: " + mapUrl : "");
+            var sms = el("a", "btn ghost"); sms.href = "sms:" + c.phone + "?body=" + encodeURIComponent(body);
+            var label = el("span", "", "Text " + c.name + " my location");
+            if (fix) label.appendChild(el("small", "", "Last known location, " + new Date(fix.recordedAt).toLocaleTimeString()));
+            sms.appendChild(label); box.appendChild(sms);
+          });
+        }
+        window.addEventListener("online", function () { location.replace("/app"); });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,151 @@
+/* Scan only application source: never build output, traces or local data. */
+@import "tailwindcss" source(none);
+@source "../";
+
+/*
+ * Raksha design tokens.
+ * Night navy carries the shell and the SOS home. Red is reserved for SOS, emergency mode and
+ * destructive actions. Green means "safe". Contrast: every text/ground pair below is ≥ 4.5:1.
+ */
+@theme {
+  --font-sans: var(--font-hanken), "Noto Sans", "Nirmala UI", "Noto Sans Devanagari", "Noto Sans Oriya", "Noto Sans Odia",
+    "Kalinga", system-ui, sans-serif;
+
+  --color-navy-950: #07111c;
+  --color-navy-900: #0d1b2a;
+  --color-navy-850: #12243a;
+  --color-navy-800: #172c45;
+  --color-navy-700: #213a59;
+  --color-navy-600: #2f4b6e;
+  --color-navy-300: #a7b8cc; /* secondary text on navy: 8.6:1 on navy-900 */
+  --color-navy-200: #cdd8e5;
+
+  --color-ground: #f1f3f5;
+  --color-surface: #ffffff;
+  --color-line: #dde2e8;
+  --color-line-strong: #c3cbd5;
+  --color-ink: #0d1b2a;
+  --color-ink-2: #3a4757; /* 9.4:1 on white */
+  --color-ink-3: #566273; /* 5.6:1 on ground */
+
+  --color-sos: #d91f2c; /* white text 5.0:1 */
+  --color-sos-hover: #c11a26;
+  --color-sos-deep: #a8101c; /* emergency ground, white text 7.6:1 */
+  --color-sos-ink: #9a0f1a; /* red text on white 7.9:1 */
+  --color-sos-soft: #fdecee;
+  --color-sos-tint: #ffd6da; /* secondary text on sos-deep: 5.2:1 */
+
+  --color-safe: #12804a; /* white text 5.0:1 */
+  --color-safe-ink: #0d6b3d;
+  --color-safe-soft: #e4f4eb;
+  --color-safe-bright: #4ade80; /* status dot on navy */
+
+  --color-warn: #a34a06; /* text on white 6.1:1 */
+  --color-warn-soft: #fdf1e3;
+
+  --radius-control: 14px;
+  --radius-panel: 18px;
+
+  --shadow-panel: 0 1px 2px rgb(13 27 42 / 0.06), 0 4px 16px -6px rgb(13 27 42 / 0.12);
+  --shadow-lift: 0 2px 6px rgb(13 27 42 / 0.12), 0 18px 40px -16px rgb(13 27 42 / 0.35);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-sos-pulse: sos-pulse 2.4s var(--ease-out-expo) infinite;
+  --animate-beacon: beacon 1.6s ease-in-out infinite;
+
+  @keyframes sos-pulse {
+    0% { box-shadow: 0 0 0 0 rgb(217 31 44 / 0.45); }
+    70% { box-shadow: 0 0 0 28px rgb(217 31 44 / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(217 31 44 / 0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes beacon {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-ground text-ink antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01" on;
+  }
+  ::selection {
+    background: var(--color-navy-700);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-navy-600);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: #fff;
+  }
+  input,
+  textarea,
+  select {
+    caret-color: var(--color-sos);
+  }
+  a {
+    text-underline-offset: 3px;
+  }
+  /* Coordinates, times, ids and counts never jitter. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  * {
+    scrollbar-color: var(--color-line-strong) transparent;
+    scrollbar-width: thin;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* SOS disc: scales with the shorter of width and height so the quick-call row stays above the fold. */
+.sos-disc {
+  width: min(68vw, 288px, 38dvh);
+}
+.sos-label {
+  font-size: clamp(48px, min(17vw, 9dvh), 76px);
+}
+@media (min-width: 1024px) {
+  .sos-disc {
+    width: min(300px, 42dvh);
+  }
+}
+
+/* Leaflet controls in the Raksha palette */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: #e8ecf0;
+}
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+.leaflet-bar a {
+  color: var(--color-ink) !important;
+}

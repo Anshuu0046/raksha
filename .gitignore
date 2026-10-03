@@ -1,0 +1,15 @@
+node_modules
+.next
+.next-*
+out
+build
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+next-env.d.ts
+.data
+playwright-report
+test-results
+.vercel
+.impeccable/config.local.json
