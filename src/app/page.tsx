@@ -53,9 +53,20 @@ export default async function LandingPage() {
               <PhoneCall className="size-4" aria-hidden />
               {t("auth.inDanger")}
             </DialLink>
-            <Button asChild variant="onDark" size="sm">
-              <Link href={user ? "/app" : "/login"}>{user ? t("landing.openApp") : t("auth.signIn")}</Link>
-            </Button>
+            {user ? (
+              <Button asChild variant="onDark" size="sm">
+                <Link href="/app">{t("landing.openApp")}</Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild variant="onDark" size="sm">
+                  <Link href="/login">{t("auth.signIn")}</Link>
+                </Button>
+                <Button asChild variant="sos" size="sm">
+                  <Link href="/signup">{t("landing.getStarted")}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>

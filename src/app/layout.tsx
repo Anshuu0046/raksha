@@ -43,14 +43,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className={hanken.variable}>
       <body>
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-ink">
+        <>
+          <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-ink">
           {(dict.common as Record<string, string> | undefined)?.skipToContent ?? "Skip to content"}
-        </a>
-        <I18nProvider locale={locale} dict={dict}>
+          </a>
+          <I18nProvider locale={locale} dict={dict}>
           {children}
           <Toaster position="top-center" richColors closeButton toastOptions={{ style: { fontFamily: "var(--font-sans)", fontSize: 15 } }} />
           <ServiceWorkerRegistrar />
-        </I18nProvider>
+          </I18nProvider>
+        </>
       </body>
     </html>
   );

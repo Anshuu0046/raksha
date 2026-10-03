@@ -1,12 +1,13 @@
 "use client";
 
-import { Ambulance, Check, Circle, Link2, Mic, MessageSquareText, Phone, Shield, Square, Users, X } from "lucide-react";
+import { Ambulance, Check, Circle, Link2, Mic, MessageSquareText, Phone, Shield, Square, Users, Volume2, VolumeX, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAppData } from "@/components/providers/app-data-provider";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useRecorder, type RecorderSegment } from "@/hooks/use-recorder";
 import { useI18n } from "@/lib/i18n/client";
+import { isSirenMuted, setSirenMuted, startSiren, stopSiren } from "@/lib/emergency/siren";
 import { formatCoords, mapLink } from "@/lib/location/geo";
 import { recordingsDb } from "@/lib/offline/recordings-db";
 import { cn, firstName } from "@/lib/utils";
@@ -89,6 +90,7 @@ export function EmergencyScreen() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [muted, setMuted] = useState(() => isSirenMuted());
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const local = em.local!;
@@ -99,6 +101,13 @@ export function EmergencyScreen() {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Loud siren and vibration while the emergency screen is up; one tap mutes it.
+  useEffect(() => {
+    if (muted) stopSiren();
+    else startSiren();
+    return () => stopSiren();
+  }, [muted]);
 
   // Move focus to the heading so screen readers announce the state change immediately.
   useEffect(() => {
@@ -202,8 +211,22 @@ export function EmergencyScreen() {
               <span className="size-2.5 animate-beacon rounded-full bg-white" aria-hidden />
               {demo ? t("demo.badge") : "Raksha"}
             </span>
-            <span className="tabular text-sm font-semibold text-sos-tint" aria-label={t("emergency.elapsed")}>
-              {mmss(elapsedSec)}
+            <span className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-pressed={muted}
+                onClick={() => {
+                  setSirenMuted(!muted);
+                  setMuted(!muted);
+                }}
+                className="on-dark inline-flex min-h-11 items-center gap-2 rounded-full bg-navy-950 px-4 text-sm font-bold text-white"
+              >
+                {muted ? <VolumeX className="size-4" aria-hidden /> : <Volume2 className="size-4" aria-hidden />}
+                {muted ? t("emergency.siren.on") : t("emergency.siren.off")}
+              </button>
+              <span className="tabular text-sm font-semibold text-sos-tint" aria-label={t("emergency.elapsed")}>
+                {mmss(elapsedSec)}
+              </span>
             </span>
           </div>
 

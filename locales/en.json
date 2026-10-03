@@ -150,6 +150,10 @@
       "keep": "Keep emergency active",
       "confirm": "End emergency",
       "chooseFirst": "Choose a reason first"
+    },
+    "siren": {
+      "on": "Turn sound on",
+      "off": "Mute siren"
     }
   },
   "ended": {

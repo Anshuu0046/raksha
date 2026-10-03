@@ -5,6 +5,7 @@ import { createHoldTracker, createTapDetector } from "@/lib/emergency/gestures";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import type { TriggerMethod } from "@/types";
+import { unlockSiren } from "@/lib/emergency/siren";
 
 const RING_R = 47;
 const RING_C = 2 * Math.PI * RING_R;
@@ -122,6 +123,7 @@ export function SosButton({
         onPointerDown={(e) => {
           if (e.button !== 0) return;
           e.currentTarget.setPointerCapture(e.pointerId);
+          unlockSiren();
           begin("hold");
         }}
         onPointerUp={() => end(true)}
@@ -130,6 +132,7 @@ export function SosButton({
         onKeyDown={(e) => {
           if ((e.key === " " || e.key === "Enter") && !e.repeat) {
             e.preventDefault();
+            unlockSiren();
             begin("keyboard");
           }
         }}
