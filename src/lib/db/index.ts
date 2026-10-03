@@ -1,5 +1,6 @@
 import { isDemoMode, isProduction, isTest, serverEnv } from "@/lib/env";
 import { MemoryRepository } from "./memory";
+import { PostgresRepository } from "./postgres";
 import type { Repository } from "./repository";
 
 export type { Repository } from "./repository";
@@ -17,9 +18,6 @@ export function getRepository(): Repository {
   const url = serverEnv.databaseUrl();
   let repo: Repository;
   if (url && !isTest()) {
-    // Lazy require keeps the postgres driver out of test and memory-mode code paths.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { PostgresRepository } = require("./postgres") as typeof import("./postgres");
     repo = new PostgresRepository(url);
   } else {
     if (isProduction() && !isDemoMode() && !process.env.RAKSHA_ALLOW_MEMORY_DB) {
