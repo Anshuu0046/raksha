@@ -1,0 +1,38 @@
+name: Build Play Store release (AAB + APK)
+on:
+  workflow_dispatch:
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      RAKSHA_VERSION_CODE: ${{ github.run_number }}
+      RAKSHA_APP_URL: ${{ vars.RAKSHA_APP_URL || 'https://raksha-tau-lyart.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Prepare signing key
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PASS" ]; then
+            echo "::error::Add the ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD repository secrets first."
+            exit 1
+          fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/raksha-release.p12"
+          echo "RAKSHA_KEYSTORE=$RUNNER_TEMP/raksha-release.p12" >> "$GITHUB_ENV"
+          echo "RAKSHA_KEY_ALIAS=raksha" >> "$GITHUB_ENV"
+          echo "RAKSHA_KEYSTORE_PASSWORD=$KS_PASS" >> "$GITHUB_ENV"
+      - run: npm ci
+      - run: npx cap sync android
+      - run: sh ./gradlew bundleRelease assembleRelease
+        working-directory: android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: raksha-release
+          path: |
+            android/app/build/outputs/bundle/release/app-release.aab
+            android/app/build/outputs/apk/release/app-release.apk
