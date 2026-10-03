@@ -36,19 +36,12 @@
 1. Import the repository; framework preset **Next.js**; Node 20+.
 2. Add all environment variables above for *Production* (and *Preview* with demo mode if you like).
    Set `NEXT_PUBLIC_APP_URL=https://your-domain` and `NEXT_PUBLIC_DEMO_MODE=false`.
-3. `vercel.json` schedules `/api/cron/process` **every minute**. Per-minute cron needs a paid Vercel
-   plan. On the Hobby plan, call the endpoint every minute from an external scheduler instead, for
-   example Supabase `pg_cron` + `pg_net`:
-   ```sql
-   select cron.schedule('raksha-tick', '* * * * *', $$
-     select net.http_get(
-       url := 'https://your-domain/api/cron/process',
-       headers := jsonb_build_object('Authorization', 'Bearer <CRON_SECRET>')
-     ) $$);
-   ```
+3. `vercel.json` pins the region to **bom1 (Mumbai)**. It does not schedule cron, because per-minute Vercel
+   Cron needs Pro and makes a Hobby deploy fail. Run `supabase/cron-tick.sql` in the Supabase SQL editor
+   (set your domain and `CRON_SECRET`) to tick every minute on any plan. On Pro you may use
+   `"crons": [{"path": "/api/cron/process", "schedule": "* * * * *"}]` in `vercel.json` instead.
    User traffic also triggers opportunistic ticks, but **cron is what guarantees** escalation when
    nobody has the app open.
-4. Set the function region to **bom1 (Mumbai)** close to the database.
 
 ## 4. Self-hosting
 

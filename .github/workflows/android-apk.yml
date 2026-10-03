@@ -1,0 +1,22 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      RAKSHA_APP_URL: ${{ vars.RAKSHA_APP_URL || 'https://raksha-tau-lyart.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npx cap sync android
+      - run: ./gradlew assembleDebug
+        working-directory: android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: raksha-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk

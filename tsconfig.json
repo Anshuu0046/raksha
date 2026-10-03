@@ -47,6 +47,9 @@
   "exclude": [
     "node_modules",
     "public",
-    ".next-e2e"
+    ".next-e2e",
+    "android",
+    "ios",
+    "mobile-web"
   ]
 }
