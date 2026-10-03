@@ -37,13 +37,15 @@ export const serverEnv = {
   databaseUrl: () => process.env.DATABASE_URL || "",
   cronSecret: () => process.env.CRON_SECRET || "",
   // SMS
-  smsProvider: () => (process.env.SMS_PROVIDER || "").toLowerCase(), // "twilio" | "msg91" | ""
+  smsProvider: () => (process.env.SMS_PROVIDER || "").toLowerCase(), // "twilio" | "msg91" | "textbee" | ""
   twilioSid: () => process.env.TWILIO_ACCOUNT_SID || "",
   twilioToken: () => process.env.TWILIO_AUTH_TOKEN || "",
   twilioApiKeySid: () => process.env.TWILIO_API_KEY_SID || "",
   twilioApiKeySecret: () => process.env.TWILIO_API_KEY_SECRET || "",
   twilioFrom: () => process.env.TWILIO_FROM_NUMBER || "",
   twilioMessagingServiceSid: () => process.env.TWILIO_MESSAGING_SERVICE_SID || "",
+  textbeeApiKey: () => process.env.TEXTBEE_API_KEY || "",
+  textbeeDeviceId: () => process.env.TEXTBEE_DEVICE_ID || "",
   msg91AuthKey: () => process.env.MSG91_AUTH_KEY || "",
   msg91SosTemplateId: () => process.env.MSG91_SOS_TEMPLATE_ID || "",
   msg91OtpTemplateId: () => process.env.MSG91_OTP_TEMPLATE_ID || "",

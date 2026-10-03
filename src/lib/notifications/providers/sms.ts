@@ -92,6 +92,34 @@ export class Msg91SmsProvider implements SmsProvider {
   }
 }
 
+/**
+ * TextBee (textbee.dev, open source): sends through the SIM card of an Android phone you own, so no DLT
+ * registration is needed. The phone must stay on, online and exempt from battery optimisation.
+ * Suitable for a pilot or as a backup channel, not as the only channel for a public launch.
+ */
+export class TextBeeSmsProvider implements SmsProvider {
+  readonly name = "textbee";
+  async send(message: SmsMessage): Promise<DeliveryResult> {
+    const apiKey = serverEnv.textbeeApiKey();
+    const deviceId = serverEnv.textbeeDeviceId();
+    if (!apiKey || !deviceId) {
+      return { status: "skipped", provider: this.name, error: "TextBee is not configured", permanent: true };
+    }
+    try {
+      const res = await fetchWithTimeout(`https://api.textbee.dev/api/v1/gateway/devices/${encodeURIComponent(deviceId)}/send-sms`, {
+        method: "POST",
+        headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ recipients: [message.to], message: message.body }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { data?: { smsBatchId?: string; _id?: string } };
+      if (res.ok) return { status: "sent", provider: this.name, messageId: body.data?.smsBatchId ?? body.data?._id };
+      return { status: "failed", provider: this.name, error: `TextBee error (${res.status})`, permanent: res.status >= 400 && res.status < 500 && res.status !== 429 };
+    } catch {
+      return { status: "failed", provider: this.name, error: "SMS provider unreachable" };
+    }
+  }
+}
+
 export function getSmsProvider(): SmsProvider {
   if (isDemoMode()) return new SimulatedSmsProvider();
   switch (serverEnv.smsProvider()) {
@@ -99,6 +127,8 @@ export function getSmsProvider(): SmsProvider {
       return new TwilioSmsProvider();
     case "msg91":
       return new Msg91SmsProvider();
+    case "textbee":
+      return new TextBeeSmsProvider();
     case "console":
       return new SimulatedSmsProvider();
     default:

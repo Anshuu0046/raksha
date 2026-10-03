@@ -28,6 +28,14 @@ indicative; variables in MSG91 syntax) and put the IDs in the environment:
 Use a **transactional/service-implicit** route. Twilio works too (`SMS_PROVIDER=twilio`) but Indian
 delivery also requires sender and template registration through Twilio.
 
+### Without DLT: your own phone as the SMS gateway (TextBee)
+
+`SMS_PROVIDER=textbee` sends through the SIM of an Android phone you keep powered, online and exempt from
+battery optimisation, so DLT is not needed. Setup: create an account at textbee.dev, install the TextBee
+Android app and log in, register the device, then set `TEXTBEE_API_KEY` and `TEXTBEE_DEVICE_ID`.
+It also carries sign-in OTPs. It is a single point of failure (one phone, one SIM, carrier spam limits), so
+use it for a pilot or as a backup, and move to a DLT-registered provider before a public launch.
+
 ## Email
 
 Resend HTTP API (`RESEND_API_KEY`). Emails include status, time, location with accuracy, address,
