@@ -144,7 +144,10 @@ export function SignupForm({ google, phoneOtp }: { google: boolean; phoneOtp: bo
         <Button type="submit" size="lg" block loading={busy}>
           {t("auth.createAccount")}
         </Button>
-        <p className="text-sm leading-relaxed text-ink-3">{t("auth.signupPrivacy")}</p>
+        <p className="text-sm leading-relaxed text-ink-3">
+          {t("auth.signupPrivacy")}{" "}
+          <a href="/privacy" className="font-semibold underline">Privacy</a> · <a href="/terms" className="font-semibold underline">Terms</a>
+        </p>
       </form>
       {google || phoneOtp ? <p className="text-center text-sm text-ink-3">{t("auth.or")}</p> : null}
       {phoneOtp ? (
