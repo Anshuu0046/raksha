@@ -1,6 +1,8 @@
 name: Build Play Store release (AAB + APK)
 on:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -36,3 +38,11 @@ jobs:
           path: |
             android/app/build/outputs/bundle/release/app-release.aab
             android/app/build/outputs/apk/release/app-release.apk
+      - name: Publish public download link
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: Raksha Android ${{ github.run_number }}
+          body: Signed Android APK. Download app-release.apk, allow installs from unknown sources, and install.
+          files: android/app/build/outputs/apk/release/app-release.apk
+          make_latest: true
