@@ -1,4 +1,5 @@
 import { AlarmClock, Hospital, Link2, ListChecks, MapPin, Navigation, PhoneCall, ShieldCheck, Siren, Smartphone, Users } from "lucide-react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { DialLink } from "@/components/emergency/dial-link";
@@ -13,6 +14,7 @@ export default async function LandingPage() {
   const { t } = await getI18n();
   const demo = isDemoMode();
   const user = await getCurrentUser();
+  if (user) redirect(user.onboardedAt ? "/app" : "/onboarding");
   const primaryHref = user ? "/app" : "/signup";
 
   const emergencyFeatures = [
@@ -38,7 +40,7 @@ export default async function LandingPage() {
       {demo ? (
         <p className="bg-warn px-4 py-1.5 text-center text-[13px] font-bold uppercase tracking-[0.08em] text-white">{t("demo.badge")}</p>
       ) : null}
-      <header className="bg-navy-900 text-white">
+      <header className="pt-safe bg-navy-900 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-8">
           <Link href="/" className="on-dark" aria-label="Raksha">
             <Logo onDark />

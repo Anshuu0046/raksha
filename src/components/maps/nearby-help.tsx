@@ -42,6 +42,15 @@ export function NearbyHelp() {
   const [useLastKnown, setUseLastKnown] = useState(false);
 
   const position = location.fix ?? (useLastKnown ? location.lastKnown : null);
+
+  // If she already allowed location, fetch it on arrival instead of asking for another tap.
+  const autoRequested = useRef(false);
+  useEffect(() => {
+    if (autoRequested.current || location.fix || location.permission !== "granted") return;
+    autoRequested.current = true;
+    void location.requestFix({ highAccuracy: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.permission, location.fix]);
   const positionRef = useRef(position);
   useEffect(() => {
     positionRef.current = position;

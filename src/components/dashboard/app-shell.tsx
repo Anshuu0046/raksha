@@ -105,7 +105,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Mobile top bar on inner pages */}
           {!home ? (
-            <header className="sticky top-0 z-20 flex h-14 items-center justify-between bg-navy-900 px-2 pl-4 text-white lg:hidden">
+            <header className="pt-safe sticky top-0 z-20 bg-navy-900 text-white lg:hidden">
+              <div className="flex h-14 items-center justify-between px-2 pl-4">
               <Link href="/app" className="on-dark inline-flex items-center gap-2" aria-label={t("nav.home")}>
                 <LogoMark tone="white" className="size-6" />
                 <span className="text-lg font-extrabold tracking-[-0.03em]">Raksha</span>
@@ -117,6 +118,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link href="/app/settings" className="on-dark grid size-12 place-items-center rounded-full hover:bg-white/10" aria-label={t("nav.settings")}>
                   <Settings className="size-5" aria-hidden />
                 </Link>
+              </div>
               </div>
             </header>
           ) : null}

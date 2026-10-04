@@ -125,6 +125,17 @@
   }
 }
 
+/* Status-bar / notch inset: env() in browsers and PWAs, Capacitor's injected variable in the Android app. */
+:root {
+  --safe-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+}
+.pt-safe {
+  padding-top: var(--safe-top);
+}
+.pt-safe-4 {
+  padding-top: max(1rem, var(--safe-top));
+}
+
 /* SOS disc: scales with the shorter of width and height so the quick-call row stays above the fold. */
 .sos-disc {
   width: min(68vw, 288px, 38dvh);

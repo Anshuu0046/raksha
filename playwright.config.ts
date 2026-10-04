@@ -42,6 +42,13 @@ export default defineConfig({
       AUTH_SECRET: "e2e-secret-e2e-secret-e2e-secret-e2e-secret",
       ADMIN_EMAILS: "admin@raksha.test",
       RAKSHA_MEMORY_PERSIST: "false",
+      // Never let tests reach the real database or any real provider, whatever .env.local contains.
+      DATABASE_URL: "",
+      MIGRATION_DATABASE_URL: "",
+      SMS_PROVIDER: "",
+      RESEND_API_KEY: "",
+      SMTP_USER: "",
+      SMTP_PASS: "",
       NEXT_DIST_DIR: ".next-e2e",
     },
   },

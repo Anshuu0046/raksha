@@ -91,7 +91,7 @@ export function HomeScreen() {
   return (
     <div className="lg:grid lg:min-h-dvh lg:grid-cols-[minmax(420px,520px)_1fr]">
       {/* Navy SOS column */}
-      <section aria-labelledby="sos-title" className="flex min-h-[calc(100dvh-76px)] flex-col bg-navy-900 px-4 pb-6 pt-[max(1rem,env(safe-area-inset-top))] text-white sm:px-6 lg:sticky lg:top-0 lg:h-dvh lg:min-h-0 lg:px-10 lg:pt-8">
+      <section aria-labelledby="sos-title" className="flex min-h-[calc(100dvh-76px)] flex-col bg-navy-900 px-4 pb-6 pt-safe-4 text-white sm:px-6 lg:sticky lg:top-0 lg:h-dvh lg:min-h-0 lg:px-10 lg:pt-8">
         <div className="flex items-center justify-between">
           <span className="lg:invisible"><Logo onDark /></span>
           <Link href="/app/settings" className="on-dark -mr-2 grid size-12 place-items-center rounded-full hover:bg-white/10 lg:hidden" aria-label={t("nav.settings")}>

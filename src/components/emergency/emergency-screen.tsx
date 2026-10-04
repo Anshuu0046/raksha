@@ -204,7 +204,7 @@ export function EmergencyScreen() {
       className="fixed inset-0 z-40 flex flex-col bg-sos-deep text-white"
     >
       {/* Scrollable status area */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-8">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-safe-4 sm:px-8">
         <div className="mx-auto w-full max-w-3xl">
           <div className="flex items-center justify-between gap-3">
             <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.08em] text-sos-tint">
